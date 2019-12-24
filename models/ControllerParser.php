@@ -106,7 +106,6 @@ class ControllerParser extends ObjectParser
                 if($class = ($args[$i]->getClass())) {
                     $className = $class->getName();
                     $this->objectArgs[] = Yii::$container->get($className);
-
                 } else {
                     $this->objectArgs[] = null;
                 }
@@ -119,6 +118,7 @@ class ControllerParser extends ObjectParser
         if ($this->objectConfig) {
             $object = Yii::configure($object, $this->objectConfig);
         }
+
         return $object;
     }
 
