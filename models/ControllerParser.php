@@ -90,6 +90,39 @@ class ControllerParser extends ObjectParser
     }
 
     /**
+     * Creates object using reflection and configures it with $objectConfig array values
+     *
+     * @return object
+     */
+    protected function createObject()
+    {
+        /** @var \ReflectionClass $reflection */
+        $reflection = $this->reflection;
+        $constructor = $reflection->getConstructor();
+
+        if (($argsCount = $constructor->getNumberOfParameters()) > 3) {
+            $args = $constructor->getParameters();
+            for($i = 2; $i < $argsCount; $i++) {
+                if($class = ($args[$i]->getClass())) {
+                    $className = $class->getName();
+                    $this->objectArgs[] = Yii::$container->get($className);
+
+                } else {
+                    $this->objectArgs[] = null;
+                }
+
+                $i++;
+            }
+        }
+
+        $object =  $this->reflection->newInstanceArgs($this->objectArgs);
+        if ($this->objectConfig) {
+            $object = Yii::configure($object, $this->objectConfig);
+        }
+        return $object;
+    }
+
+    /**
      * include actions defined in controller, as well as those returned by `Controller::actions()` method
      *
      * @return array
